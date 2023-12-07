@@ -30,6 +30,18 @@ def addRules(rules:list[Rule] , systemVariables:list[Variable]) -> None:
         out_variableName = line[-2]
         out_variableSet = line[-1]
 
+        matchedVar1 = list(filter(lambda x : x ==  in_variableName1 ,systemVariables))[0]
+        matchedSet1 = list(filter(lambda x : x ==  in_variableSet1 ,matchedVar1.fuzzySets))[0]
+
+        matchedVar2 = list(filter(lambda x : x ==  in_variableName2 ,systemVariables))[0]
+        matchedSet2 = list(filter(lambda x : x ==  in_variableSet2 ,matchedVar2.fuzzySets))[0]
+
+        out_variableName = list(filter(lambda x : x ==  out_variableName ,systemVariables))[0]
+        out_variableSet = list(filter(lambda x : x ==  out_variableSet ,out_variableName.fuzzySets))[0]
+
+        rule = Rule(matchedVar1, matchedVar2, operator, matchedSet1, matchedSet2, out_variableName, out_variableSet)
+        rules.append(rule)
+
 
 
 def createFuzzySets(names:list[str] , types:list[str] , valuesList:list[str] , varLower:float , varUpper:float)->list[FuzzySet]:
