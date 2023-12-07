@@ -12,4 +12,7 @@ class FuzzySystem():
         self.variables.append(variable)
     
     def addRule(self , rule:Rule )->None:
-        pass
+        self.rules.append(rule)
+
+    def getInputVariables(self)->list[Variable]:
+        return list(filter(lambda x : x.type == 'IN' , self.variables))

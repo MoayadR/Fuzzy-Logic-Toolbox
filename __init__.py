@@ -5,42 +5,59 @@ from Rule import Rule
 from math import inf
 import re
 
-def addRules(rules:list[Rule] , systemVariables:list[Variable]) -> None:
+def createRule(fuzzySystem:FuzzySystem , variableNames:list , operatorNames:list  , setNames:list,  outVariableName:str , outSetName:str ) -> Rule:
+    variables = []
+    fuzzySets = []
+    for i in range(len(variableNames)):
+        matchedVar = list(filter(lambda x : x.name ==  variableNames[i] ,fuzzySystem.variables))[0]
+        matchedSet = list(filter(lambda x : x.name ==  setNames[i] , matchedVar.fuzzySets))[0]
+        variables.append(matchedVar)
+        fuzzySets.append(matchedSet)
+    
+    out_variable = list(filter(lambda x : x.name ==  outVariableName ,fuzzySystem.variables))[0]
+    out_variableSet = list(filter(lambda x : x.name ==  outSetName ,out_variable.fuzzySets))[0]
+
+    return Rule(variables , fuzzySets , operatorNames , out_variable , out_variableSet)
+
+
+def addRules(fuzzySystem:FuzzySystem) -> None:
     print("Enter the rules in this format: (Press x to finish)\nIN_variable set operator IN_variable set => OUT_variable set")
     print("--------------------------------------------------------------------------------")
 
-    in_variableName1 = ''
-    in_variableName2 = ''
-    in_variableSet1 = ''
-    in_variableSet2 = ''
-    operator = ''
-    out_variableName = ''
-    out_variableSet = ''
-
     while True:
         line = input()
-        line = line.split(' ')
+        variableNames = []
+        operatorNames = []
+        setNames = []
+        outVariableName = None
+        outSetName = None
         if line == 'x':
             break
-        in_variableName1 = line[0]
-        in_variableSet1 = line[1]
-        operator = line[2]
-        in_variableName2 = line[3]
-        in_variableSet2 = line[4]
-        out_variableName = line[-2]
-        out_variableSet = line[-1]
+        line = line.split(' ')
+        
 
-        matchedVar1 = list(filter(lambda x : x ==  in_variableName1 ,systemVariables))[0]
-        matchedSet1 = list(filter(lambda x : x ==  in_variableSet1 ,matchedVar1.fuzzySets))[0]
+        variableNames.append(line[0])
+        setNames.append(line[1])
+        operatorNames.append(line[2])
+        variableNames.append(line[3])
+        setNames.append(line[4])
+        
+        i = 5
+        while i < len(line):
+            if line[i] == '=>':
+                break
+            operatorNames.append(line[i])
+            variableNames.append(line[i+1])
+            setNames.append(line[i+2])
+            i+=3
 
-        matchedVar2 = list(filter(lambda x : x ==  in_variableName2 ,systemVariables))[0]
-        matchedSet2 = list(filter(lambda x : x ==  in_variableSet2 ,matchedVar2.fuzzySets))[0]
+        outVariableName = line[-2]
+        outSetName = line[-1]
+        fuzzySystem.addRule(createRule(fuzzySystem , variableNames , operatorNames , setNames , outVariableName ,outSetName ))
 
-        out_variableName = list(filter(lambda x : x ==  out_variableName ,systemVariables))[0]
-        out_variableSet = list(filter(lambda x : x ==  out_variableSet ,out_variableName.fuzzySets))[0]
 
-        rule = Rule(matchedVar1, matchedVar2, operator, matchedSet1, matchedSet2, out_variableName, out_variableSet)
-        rules.append(rule)
+
+    
 
 
 
@@ -148,17 +165,21 @@ def mainMenu():
         elif choice == 2:
             addFuzzySets(fuzzySystem.variables)
         elif choice == 3:
-            addRules(fuzzySystem.rules , fuzzySystem.variables)
+            addRules(fuzzySystem)
+        elif choice == 4:
+            if fuzzySystem.rules == 0 or fuzzySystem.variables == 0:
+                continue
+            
+            inputVariables = fuzzySystem.getInputVariables()
         else:
-            pass
-
+            break
+            
 def main():
     print("Fuzzy Logic Toolbox\n===================")
     while True:
         choice = int(input("1- Create a new fuzzy system \n2- Quit\n"))
         if choice == 1:
             mainMenu()
-            break
         else:
             break
 
