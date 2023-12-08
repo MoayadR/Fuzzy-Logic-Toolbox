@@ -17,13 +17,13 @@ class FuzzySystem():
     def getInputVariables(self)->list[Variable]:
         return list(filter(lambda x : x.type == 'IN' , self.variables))
 
-    def defuzzyfication(self, outSetsValues : dict) -> float :
+    def defuzzyfication(self, outSetsValues : list[list]) -> float :
         result =0
         sum =0 
-        for key, value in outSetsValues.items():
-           mul = key.calcCentroid() * value
+        for L in outSetsValues:
+           mul = L[0].calcCentroid() * L[1]
            result += mul
-           sum += value
+           sum += L[1]
         return result/sum
 
         

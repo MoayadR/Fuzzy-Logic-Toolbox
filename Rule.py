@@ -55,4 +55,4 @@ class Rule():
         self.applyNOT()
         self.applyAND()
         self.applyOR()
-        return {self.outSet: self.fuzzyficationList[0]}
+        return [self.outSet, self.fuzzyficationList[0]]

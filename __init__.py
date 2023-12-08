@@ -199,10 +199,10 @@ def mainMenu():
                 value = int(input())
                 variablesValues[var] = value
             
-            outFuzzySetsValues = {}
+            outFuzzySetsValues = []
             for rule in fuzzySystem.rules:
                 rule.createFuzzificationList(variablesValues)
-                outFuzzySetsValues.update(rule.inference())
+                outFuzzySetsValues.append(rule.inference())
 
             finalResult = fuzzySystem.defuzzyfication(outFuzzySetsValues)
             print(finalResult)
