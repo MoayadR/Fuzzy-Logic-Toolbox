@@ -203,6 +203,9 @@ def mainMenu():
             for rule in fuzzySystem.rules:
                 rule.createFuzzificationList(variablesValues)
                 outFuzzySetsValues.update(rule.inference())
+
+            finalResult = fuzzySystem.defuzzyfication(outFuzzySetsValues)
+            print(finalResult)
                 
         else:
             break

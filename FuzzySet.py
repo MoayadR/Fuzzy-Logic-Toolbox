@@ -44,3 +44,9 @@ class FuzzySet():
     def fuzzyfication(self , value):
         lines = list(filter(lambda x : x.isInRange(value) == True , self.lines))
         return lines[0].predict(value)
+
+    def calcCentroid (self):
+        return sum(self.values)/len(self.values)
+
+    
+        
