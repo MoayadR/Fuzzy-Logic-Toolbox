@@ -36,17 +36,43 @@ def addRules(fuzzySystem:FuzzySystem) -> None:
         line = line.split(' ')
         
 
-        variableNames.append(line[0])
-        setNames.append(line[1])
-        operatorNames.append(line[2])
-        variableNames.append(line[3])
-        setNames.append(line[4])
-        
-        i = 5
+        if line[0] == 'not': # fix this later
+            operatorNames.append(line[0])
+            variableNames.append(line[1])
+            setNames.append(line[2])
+            if "not" in line[3]:
+                operatorNames.append(line[3].split('_')[0])
+                operatorNames.append('not')
+            else:
+                operatorNames.append(line[3])
+                
+            variableNames.append(line[4])
+            setNames.append(line[5])
+            i = 6
+        else:
+            variableNames.append(line[0])
+            setNames.append(line[1])
+
+            if "not" in line[2]:
+                operatorNames.append(line[2].split('_')[0])
+                operatorNames.append('not')
+            else:
+                operatorNames.append(line[2])
+
+            variableNames.append(line[3])
+            setNames.append(line[4])
+            i = 5
+
         while i < len(line):
             if line[i] == '=>':
                 break
-            operatorNames.append(line[i])
+
+            if "not" in line[i]:
+                operatorNames.append(line[i].split('_')[0])
+                operatorNames.append('not')
+            else:
+                operatorNames.append(line[i])
+
             variableNames.append(line[i+1])
             setNames.append(line[i+2])
             i+=3
@@ -54,10 +80,6 @@ def addRules(fuzzySystem:FuzzySystem) -> None:
         outVariableName = line[-2]
         outSetName = line[-1]
         fuzzySystem.addRule(createRule(fuzzySystem , variableNames , operatorNames , setNames , outVariableName ,outSetName ))
-
-
-
-    
 
 
 
@@ -171,6 +193,17 @@ def mainMenu():
                 continue
             
             inputVariables = fuzzySystem.getInputVariables()
+            variablesValues = {}
+            for var in inputVariables:
+                print(f"{var.name}:")
+                value = int(input())
+                variablesValues[var] = value
+            
+            outFuzzySetsValues = {}
+            for rule in fuzzySystem.rules:
+                rule.createFuzzificationList(variablesValues)
+                outFuzzySetsValues.update(rule.inference())
+                
         else:
             break
             

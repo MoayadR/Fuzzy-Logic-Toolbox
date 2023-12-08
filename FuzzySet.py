@@ -40,3 +40,7 @@ class FuzzySet():
             if line.isInRange(x):
                 res.append(line)
         return res
+    
+    def fuzzyfication(self , value):
+        lines = list(filter(lambda x : x.isInRange(value) == True , self.lines))
+        return lines[0].predict(value)
