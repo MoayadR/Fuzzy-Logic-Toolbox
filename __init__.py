@@ -9,13 +9,34 @@ def createRule(fuzzySystem:FuzzySystem , variableNames:list , operatorNames:list
     variables = []
     fuzzySets = []
     for i in range(len(variableNames)):
-        matchedVar = list(filter(lambda x : x.name ==  variableNames[i] ,fuzzySystem.variables))[0]
-        matchedSet = list(filter(lambda x : x.name ==  setNames[i] , matchedVar.fuzzySets))[0]
+        matchedVar = list(filter(lambda x : x.name ==  variableNames[i] ,fuzzySystem.variables))
+        if len(matchedVar) == 0:
+            print(f"ERROR! THERE IS NO SUCH VARIABLE {variableNames[i]} IN THE SYSTEM")
+            return
+        matchedVar = matchedVar[0]
+
+
+        matchedSet = list(filter(lambda x : x.name ==  setNames[i] , matchedVar.fuzzySets))
+        if len(matchedSet) == 0:
+            print(f"ERROR! THERE IS NO SUCH SET {setNames[i]} IN THE SYSTEM")
+            return
+        matchedSet = matchedSet[0]
+    
         variables.append(matchedVar)
         fuzzySets.append(matchedSet)
     
-    out_variable = list(filter(lambda x : x.name ==  outVariableName ,fuzzySystem.variables))[0]
-    out_variableSet = list(filter(lambda x : x.name ==  outSetName ,out_variable.fuzzySets))[0]
+    out_variable = list(filter(lambda x : x.name ==  outVariableName ,fuzzySystem.variables))
+    if len(out_variable) == 0:
+        print(f"THERE IS NO SUCH OUT VARIABLE {outVariableName} IN THE SYSTEM")
+        return
+    out_variable = out_variable[0]
+
+
+    out_variableSet = list(filter(lambda x : x.name ==  outSetName ,out_variable.fuzzySets))
+    if len(out_variableSet) == 0:
+        print(f"THERE IS NO SUCH OUT SET {outSetName} IN THE SYSTEM")
+        return
+    out_variableSet = out_variableSet[0]
 
     return Rule(variables , fuzzySets , operatorNames , out_variable , out_variableSet)
 
@@ -36,7 +57,7 @@ def addRules(fuzzySystem:FuzzySystem) -> None:
         line = line.split(' ')
         
 
-        if line[0] == 'not': # fix this later
+        if line[0] == 'not': # case start with not
             operatorNames.append(line[0])
             variableNames.append(line[1])
             setNames.append(line[2])
@@ -94,7 +115,12 @@ def addFuzzySets(systemVariables:list[Variable])-> None:
     print("--------------------------")
     variableName = input()
 
-    var = list(filter(lambda x : x.name == variableName , systemVariables))[0]
+    var = list(filter(lambda x : x.name == variableName , systemVariables))
+    if len(var) == 0:
+        print("ERROR Variable NOT FOUND")
+        return None
+
+    var = var[0]
 
     print("Enter the fuzzy set name, type (TRI/TRAP) and values: (Press x to finish)")
     print("-------------------------------------------------------------------------")
@@ -110,6 +136,10 @@ def addFuzzySets(systemVariables:list[Variable])-> None:
         if line == 'x':
             break
         line = line.split(' ')
+        if len(line) <3:
+            print("ERROR Invalid SET")
+            continue
+
         name = line[0]
         type = line[1]
         values = list(map(lambda x : int(x) , line[2:]))
@@ -159,10 +189,13 @@ def addVariables() -> list[Variable]:
         if line == 'x':
             break
         name , type , lower , upper = parseVariables(line)
-        names.append(name)
-        types.append(type)
-        lowers.append(lower)
-        uppers.append(upper)
+        if name != None and type != None and lower != None and upper != None:
+            names.append(name)
+            types.append(type)
+            lowers.append(lower)
+            uppers.append(upper)
+        else:
+            print("Error while parsing the input")
     
     return createVariables(names , types , lowers , uppers)
 
@@ -178,19 +211,26 @@ def mainMenu():
         print("3- Add rules.")
         print("4- Run the simulation on crisp values.")
 
-        choice = int(input())
-        if choice == 1:
+        choice = input()
+        if choice == "1":
             # add Variable
             for i in addVariables():
                 fuzzySystem.addVariable(i)
 
-        elif choice == 2:
+        elif choice == "2":
+            if len(fuzzySystem.variables) == 0:
+                print("Not Enough Variables!")
+
             addFuzzySets(fuzzySystem.variables)
-        elif choice == 3:
+        elif choice == "3":
+            if len(fuzzySystem.variables) == 0:
+                print("Not Enough Variables!")
+                continue
+
             addRules(fuzzySystem)
-        elif choice == 4:
-            if fuzzySystem.rules == 0 or fuzzySystem.variables == 0:
-                print("CAN\’T START THE SIMULATION! Please add the fuzzy sets and rules first.")
+        elif choice == "4":
+            if len(fuzzySystem.rules) == 0 or len(fuzzySystem.variables) == 0:
+                print("CAN’T START THE SIMULATION! Please add the fuzzy sets and rules first.")
                 continue
             
             inputVariables = fuzzySystem.getInputVariables()
@@ -205,22 +245,20 @@ def mainMenu():
                 rule.createFuzzificationList(variablesValues)
                 outFuzzySetsValues.append(rule.inference())
 
-            Result = fuzzySystem.defuzzyfication(outFuzzySetsValues)
+            Result = fuzzySystem.defuzzyfication(outFuzzySetsValues) # defuzzication
             outVar = fuzzySystem.getOutputVariables()
             outSets = list(filter(lambda x : x.isInRange(Result), outVar.fuzzySets))
-            finalResult = 0
+            finalResult = 0 # fuzzification 
             finalSet = ""
-            L = []
             for i in outSets:
                 if finalResult < i.fuzzyfication(Result):
                     finalResult = i.fuzzyfication(Result)
                     finalSet = i.name
 
-            print(f'The predicted risk is {finalSet} ({finalResult})')
+            print(f'The predicted risk is {finalSet} ({round(Result , 3)})')
                 
-        else:
-            if choice == "close":
-                break
+        elif choice == "close":
+            break
             
 def main():
     print("Fuzzy Logic Toolbox\n===================")
