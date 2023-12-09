@@ -190,6 +190,7 @@ def mainMenu():
             addRules(fuzzySystem)
         elif choice == 4:
             if fuzzySystem.rules == 0 or fuzzySystem.variables == 0:
+                print("CAN\’T START THE SIMULATION! Please add the fuzzy sets and rules first.")
                 continue
             
             inputVariables = fuzzySystem.getInputVariables()
@@ -204,11 +205,22 @@ def mainMenu():
                 rule.createFuzzificationList(variablesValues)
                 outFuzzySetsValues.append(rule.inference())
 
-            finalResult = fuzzySystem.defuzzyfication(outFuzzySetsValues)
-            print(finalResult)
+            Result = fuzzySystem.defuzzyfication(outFuzzySetsValues)
+            outVar = fuzzySystem.getOutputVariables()
+            outSets = list(filter(lambda x : x.isInRange(Result), outVar.fuzzySets))
+            finalResult = 0
+            finalSet = ""
+            L = []
+            for i in outSets:
+                if finalResult < i.fuzzyfication(Result):
+                    finalResult = i.fuzzyfication(Result)
+                    finalSet = i.name
+
+            print(f'The predicted risk is {finalSet} ({finalResult})')
                 
         else:
-            break
+            if choice == "close":
+                break
             
 def main():
     print("Fuzzy Logic Toolbox\n===================")

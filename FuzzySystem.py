@@ -17,6 +17,9 @@ class FuzzySystem():
     def getInputVariables(self)->list[Variable]:
         return list(filter(lambda x : x.type == 'IN' , self.variables))
 
+    def getOutputVariables(self)-> Variable:
+        return list(filter(lambda x : x.type == 'OUT' , self.variables))[0]
+
     def defuzzyfication(self, outSetsValues : list[list]) -> float :
         result =0
         sum =0 

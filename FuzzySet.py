@@ -41,7 +41,7 @@ class FuzzySet():
                 res.append(line)
         return res
     
-    def fuzzyfication(self , value):
+    def fuzzyfication(self , value) -> float:
         lines = list(filter(lambda x : x.isInRange(value) == True , self.lines))
         return lines[0].predict(value)
 
