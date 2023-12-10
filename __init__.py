@@ -47,6 +47,8 @@ def addRules(fuzzySystem:FuzzySystem) -> None:
 
     while True:
         line = input()
+
+
         variableNames = []
         operatorNames = []
         setNames = []
@@ -54,7 +56,17 @@ def addRules(fuzzySystem:FuzzySystem) -> None:
         outSetName = None
         if line == 'x':
             break
+
+        if line.count(' ') == 0:
+            print("INVALID INPUT!")
+            continue
+
+
         line = line.split(' ')
+
+        if(len(line) < 8):
+            print("Missing INPUT!")
+            continue
         
 
         if line[0] == 'not': # case start with not
@@ -133,10 +145,17 @@ def addFuzzySets(systemVariables:list[Variable])-> None:
     line = None
     while True:
         line = input()
+        
         if line == 'x':
             break
+
+        if line.count(' ') == 0:
+            print("Missing INPUT!")
+            continue;
+
         line = line.split(' ')
-        if len(line) <3:
+
+        if len(line) <5:
             print("ERROR Invalid SET")
             continue
 
@@ -186,8 +205,14 @@ def addVariables() -> list[Variable]:
 
     while True:
         line = input()
+
         if line == 'x':
             break
+
+        if line.count(' ') == 0:
+            print("Missing input")
+            continue
+        
         name , type , lower , upper = parseVariables(line)
         if name != None and type != None and lower != None and upper != None:
             names.append(name)
