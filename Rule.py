@@ -7,10 +7,12 @@ class Rule():
         self.fuzzySets = fuzzySets
         self.operators = operators
         self.outVariable = outVariable
+        self.GlobalOps =operators
         self.outSet = outSet
         self.fuzzyficationList = []
     
     def createFuzzificationList(self , variablesValues:dict)->None:
+        self.fuzzyficationList.clear()
         for i in range(len(self.fuzzySets)):
             value = variablesValues[self.variables[i]]
             if self.fuzzySets[i].isInRange(value):
@@ -52,6 +54,7 @@ class Rule():
             i+=1
 
     def inference(self):
+        self.operators = self.GlobalOps
         self.applyNOT()
         self.applyAND()
         self.applyOR()
