@@ -245,6 +245,7 @@ def mainMenu():
         elif choice == "2":
             if len(fuzzySystem.variables) == 0:
                 print("Not Enough Variables!")
+                continue
 
             addFuzzySets(fuzzySystem.variables)
         elif choice == "3":

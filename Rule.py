@@ -1,5 +1,6 @@
 from Variable import Variable 
 from FuzzySet import FuzzySet
+from copy import deepcopy
 
 class Rule():
     def __init__(self , variables:list[Variable] , fuzzySets:list[FuzzySet] , operators:list[str] ,outVariable:Variable , outSet:FuzzySet ):
@@ -12,7 +13,7 @@ class Rule():
         self.fuzzyficationList = []
     
     def createFuzzificationList(self , variablesValues:dict)->None:
-        self.fuzzyficationList.clear()
+        self.fuzzyficationList = []
         for i in range(len(self.fuzzySets)):
             value = variablesValues[self.variables[i]]
             if self.fuzzySets[i].isInRange(value):
@@ -54,7 +55,7 @@ class Rule():
             i+=1
 
     def inference(self):
-        self.operators = self.GlobalOps
+        self.operators = deepcopy(self.GlobalOps)
         self.applyNOT()
         self.applyAND()
         self.applyOR()
